@@ -14,7 +14,15 @@ class Instrument(ABC):
             raise ValueError("Currency must have three letters")
         self.currency = currency
 
-    @property
+    def __eq__(self, other):
+        """Two are instruments are the same if they have the same ticker and currency"""
+        if not isinstance(other, Instrument):
+            return NotImplemented
+        return self.ticker == other.ticker and self.currency == other.currency
+
+    def __hash__(self):
+        return hash((self.ticker, self.currency))
+
     @abstractmethod
     def price(self):
         """Price definition must be determined at sub-instrument level"""
@@ -31,24 +39,14 @@ class Equity(Instrument):
         if shares_outstanding <= 0: raise ValueError("Number of outstanding shares must be strictly positive")
         self.shares_outstanding = shares_outstanding
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Equity({self.ticker},{self.currency},{self.adj_price},{self.shares_outstanding})"
 
-    def __eq__(self, other):
-        """Useful in object testing for options"""
-        if not isinstance(other, Equity):
-            return NotImplemented
-        return (self.ticker == other.ticker and
-                self.currency == other.currency and
-                self.adj_price == other.adj_price and
-                self.shares_outstanding == other.shares_outstanding
-        ) 
-
-    def price(self):
+    def price(self) -> float:
         return self.adj_price
 
     @property
-    def market_cap(self):
+    def market_cap(self) -> float:
         return self.shares_outstanding * self.adj_price
 
 # Bond
@@ -65,22 +63,22 @@ class Bond(Instrument):
         if market_price <= 0: raise ValueError("Bond's market price must be strictly positive")
         self.market_price = market_price
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Bond({self.ticker}, {self.currency}, {self.face_value}, {self.coupon_rate}, {self.years_to_maturity}, {self.market_price})"
 
-    def price(self):
+    def price(self) -> float:
         """
         Market prices are commonly quoted in percentage of Face Value
         So to get the price of the obligation, it must be multiplied by the face value
         """
-        return self.face_value * self.market_price/100
+        return round(self.face_value * self.market_price/100, 2)
 
     @property
-    def ytm(self):
+    def ytm(self) -> float:
         coupon = self.face_value * self.coupon_rate
         avg_annual_return = coupon + (self.face_value - self.price()) / self.years_to_maturity
         avg_capital_invested = (self.face_value + self.price()) / 2
-        return avg_annual_return / avg_capital_invested
+        return round(avg_annual_return / avg_capital_invested, 4)
 
 class Option(Instrument):
     def __init__(self, ticker: str, currency: str, underlying: Equity, option_type: str, strike: float, expiry: date) -> None:
@@ -100,7 +98,7 @@ class Option(Instrument):
         self.strike = strike
         self.expiry = expiry
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Option({self.ticker}, {self.currency}, {self.underlying}, {self.option_type}, {self.strike}, {self.expiry})"
 
     def price(self):

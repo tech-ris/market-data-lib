@@ -6,8 +6,11 @@ import pytest
 # Initial tests: default behavior tests
 def test_instrument_default_values(default_equity):
     instrument = default_equity()
+    instrument2 = default_equity()
     assert instrument.ticker == "TCKR"
     assert instrument.currency == "CUR"
+    assert instrument == instrument2
+    assert instrument == default_equity(adj_price=155)  #should be True
 
 # Ticker
 @pytest.mark.parametrize(
@@ -45,6 +48,7 @@ def test_equity_default_values(default_equity):
     stock = default_equity()
     assert stock.adj_price == 150
     assert stock.shares_outstanding == 400_000
+    assert stock.price() == 150
     assert stock.market_cap == 150 * 400_000
 
 # Adjusted Closing Price
@@ -75,7 +79,7 @@ def test_equity_shares_outstanding(default_equity, value_test, expected_value, e
 
 
 # Bond
-## Initial tests: default behavior tests
+# Initial tests: default behavior tests
 def test_default_values_bond(default_bond):
     bond = default_bond()
     assert bond.face_value == 1000
@@ -83,7 +87,7 @@ def test_default_values_bond(default_bond):
     assert bond.years_to_maturity == 10
     assert bond.market_price == 98.72
     assert bond.price() == 1000 * 98.72/100
-    assert bond.ytm == (0.05 * 1000 + (1000 - 987.20) / 10) / ((1000 + 987.20)/2)
+    assert bond.ytm == round((0.05 * 1000 + (1000 - 987.20) / 10) / ((1000 + 987.20)/2), 4)
 
 # Face Value
 @pytest.mark.parametrize(
