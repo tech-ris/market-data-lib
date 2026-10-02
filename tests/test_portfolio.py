@@ -1,9 +1,7 @@
-from market_data_lib.portfolio import Portfolio
-from contextlib import nullcontext
 import pytest
 
 def test_portfolio_default(default_pf, default_equity, default_bond):
-    def_eq, def_bnd = default_equity(ticker="STCK"), default_bond(ticker="BND")
+    def_eq, def_bnd = default_equity(), default_bond()
     pf = default_pf()
     assert pf.positions == {def_eq:10, def_bnd:2}
     assert pf.assets == {def_eq.ticker, def_bnd.ticker}
@@ -16,8 +14,8 @@ def test_portfolio_default(default_pf, default_equity, default_bond):
     assert pf.total_value() == 150 * 10 + 987.2*2
 
 def test_portfolio_w_option_default(default_pf, default_equity, default_bond, default_option):
-    def_eq, def_bnd = default_equity(ticker="STCK"), default_bond(ticker="BND")
-    def_opt = default_option(ticker="OPT")
+    def_eq, def_bnd = default_equity(), default_bond()
+    def_opt = default_option()
     pf = default_pf({def_opt: 7})   # For testing purpose: adding 7 default options to the portfolio 
     assert pf.positions == {def_eq:10, def_bnd:2, def_opt:7}    # To confirm options have been well integrated
 
