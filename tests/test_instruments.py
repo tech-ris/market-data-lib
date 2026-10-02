@@ -5,18 +5,17 @@ import pytest
 # Instrument
 # Initial tests: default behavior tests
 def test_instrument_default_values(default_equity):
-    instrument = default_equity()
-    instrument2 = default_equity()
-    assert instrument.ticker == "TCKR"
+    instrument = default_equity(ticker="INSTR")
+    instrument2 = default_equity(ticker="INSTR", adj_price=155)
+    assert instrument.ticker == "INSTR"
     assert instrument.currency == "CUR"
-    assert instrument == instrument2
-    assert instrument == default_equity(adj_price=155)  #should be True
+    assert instrument == instrument2    #should be True
 
 # Ticker
 @pytest.mark.parametrize(
         "value_test, expected_value, expected_context",
         [
-            pytest.param("  T C     KR  ", "TCKR", nullcontext(), id="Handle Whitespace"),
+            pytest.param("  I N   S  TR  ", "INSTR", nullcontext(), id="Handle Whitespace"),
             pytest.param("  ", None, pytest.raises(ValueError, match="^Missing ticker$"), id="No Empty ticker")
         ]
 )
