@@ -1,75 +1,61 @@
+from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from datetime import date
 
-# Instrument
+@dataclass(frozen=True)
 class Instrument(ABC):
-    def __init__(self, ticker: str, currency: str):
-        ticker = ticker.replace(" ","").upper()
-        if ticker == "": raise ValueError("Missing ticker")
-        self.ticker = ticker
+    ticker: str
+    currency: str
 
-        currency = currency.replace(" ","").upper()
-        if currency == "": raise ValueError("Missing currency")
-        if not currency.isalpha() or len(currency) != 3: 
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "ticker", self.ticker.replace(" ", "").upper())
+        if not self.ticker: raise ValueError("Missing ticker")
+
+        object.__setattr__(self, "currency", self.currency.replace(" ", "").upper())
+        if not self.currency: raise ValueError("Missing currency")
+        if not self.currency.isalpha() or len(self.currency) != 3:
             raise ValueError("Currency must have three letters")
-        self.currency = currency
-
-    def __eq__(self, other):
-        """Two are instruments are the same if they have the same ticker and currency"""
-        if not isinstance(other, Instrument):
-            return NotImplemented
-        return self.ticker == other.ticker and self.currency == other.currency
-
-    def __hash__(self):
-        return hash((self.ticker, self.currency))
 
     @abstractmethod
-    def price(self):
+    def price(self) -> float | NotImplementedError:
         """Price definition must be determined at sub-instrument level"""
         pass
 
-# Equity
+@dataclass(frozen=True)
 class Equity(Instrument):
-    def __init__(self, ticker: str, currency: str, adj_price: float, shares_outstanding: int) -> None:
-        super().__init__(ticker, currency)
+    adj_price: float
+    shares_outstanding: int
 
-        if adj_price <= 0: raise ValueError("Stock price must be strictly positive")
-        self.adj_price = adj_price
-
-        if shares_outstanding <= 0: raise ValueError("Number of outstanding shares must be strictly positive")
-        self.shares_outstanding = shares_outstanding
-
-    def __repr__(self) -> str:
-        return f"Equity({self.ticker},{self.currency},{self.adj_price},{self.shares_outstanding})"
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if self.adj_price <= 0: raise ValueError("Stock price must be positive")
+        if self.shares_outstanding <= 0: raise ValueError("Number of outstanding shares must be positive")
 
     def price(self) -> float:
         return self.adj_price
 
     @property
     def market_cap(self) -> float:
-        return self.shares_outstanding * self.adj_price
+        return self.price() * self.shares_outstanding
 
-# Bond
+@dataclass(frozen=True)
 class Bond(Instrument):
-    def __init__(self, ticker: str, currency: str, face_value: int, coupon_rate: float, years_to_maturity: int, market_price: float) -> None:
-        super().__init__(ticker, currency)
+    face_value: int
+    coupon_rate: float
+    years_to_maturity: int
+    market_price: float
 
-        if face_value <= 0: raise ValueError("Bond's face value must be strictly positive")
-        self.face_value = face_value
-        if coupon_rate <= 0: raise ValueError("Bond's coupon rate must be strictly positive")
-        self.coupon_rate = coupon_rate
-        if years_to_maturity <= 0: raise ValueError("Bond's years to maturity must be strictly positive")
-        self.years_to_maturity = years_to_maturity
-        if market_price <= 0: raise ValueError("Bond's market price must be strictly positive")
-        self.market_price = market_price
-
-    def __repr__(self) -> str:
-        return f"Bond({self.ticker}, {self.currency}, {self.face_value}, {self.coupon_rate}, {self.years_to_maturity}, {self.market_price})"
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if self.face_value <= 0: raise ValueError("Bond's face value must be positive")
+        if self.coupon_rate <= 0: raise ValueError("Bond's coupon rate must be positive")
+        if self.years_to_maturity <= 0: raise ValueError("Bond's years to maturity must be positive")
+        if self.market_price <= 0: raise ValueError("Bond's market price must be positive")
 
     def price(self) -> float:
         """
-        Market prices are commonly quoted in percentage of Face Value
-        So to get the price of the obligation, it must be multiplied by the face value
+        Market prices are commonly quoted in percentage of face value
+        So to get the price of the bond, it must be multiplied by the face value 
         """
         return round(self.face_value * self.market_price/100, 2)
 
@@ -80,26 +66,26 @@ class Bond(Instrument):
         avg_capital_invested = (self.face_value + self.price()) / 2
         return round(avg_annual_return / avg_capital_invested, 4)
 
+@dataclass(frozen=True)
 class Option(Instrument):
-    def __init__(self, ticker: str, currency: str, underlying: Equity, option_type: str, strike: float, expiry: date) -> None:
-        super().__init__(ticker, currency)
+    underlying: Equity
+    option_type: str
+    strike: float
+    expiry: date
 
-        if not isinstance(underlying, Equity): raise TypeError("The underlying must be an Equity object")
-        self.underlying = underlying
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if not isinstance(self.underlying, Equity): raise TypeError("The underlying must be an Equity object")
 
-        if option_type.replace(" ","").lower() in {"call", "c"}:
-            self.option_type = "Call"
-        elif option_type.replace(" ","").lower() in {"put", "p"}:
-            self.option_type = "Put"
+        cleaned_option_type = self.option_type.replace(" ", "").lower() 
+        if cleaned_option_type in {"call", "c"}:
+            object.__setattr__(self, "option_type", "Call")
+        elif cleaned_option_type in {"put", "p"}:
+            object.__setattr__(self, "option_type", "Put")
         else:
             raise ValueError("Must be either call (c) or put (p)")
 
-        if strike <= 0: raise ValueError("Strike price must be strictly positive")
-        self.strike = strike
-        self.expiry = expiry
+        if self.strike <= 0: raise ValueError("Strike price must be positive")
 
-    def __repr__(self) -> str:
-        return f"Option({self.ticker}, {self.currency}, {self.underlying}, {self.option_type}, {self.strike}, {self.expiry})"
-
-    def price(self):
+    def price(self) -> float | NotImplementedError:
         return NotImplementedError("Pricing not yet implemented")

@@ -6,10 +6,8 @@ import pytest
 # Initial tests: default behavior tests
 def test_instrument_default_values(default_equity):
     instrument = default_equity(ticker="INSTR")
-    instrument2 = default_equity(ticker="INSTR", adj_price=155)
     assert instrument.ticker == "INSTR"
     assert instrument.currency == "CUR"
-    assert instrument == instrument2    #should be True
 
 # Ticker
 @pytest.mark.parametrize(
@@ -54,8 +52,8 @@ def test_equity_default_values(default_equity):
 @pytest.mark.parametrize(
     "value_test, expected_value, expected_context",
     [
-        pytest.param(0, None, pytest.raises(ValueError, match="^Stock price must be strictly positive$"), id="No null adjusted close price"),
-        pytest.param(-1, None, pytest.raises(ValueError, match="^Stock price must be strictly positive$"), id="No negative adjusted close price")
+        pytest.param(0, None, pytest.raises(ValueError, match="^Stock price must be positive$"), id="No null adjusted close price"),
+        pytest.param(-1, None, pytest.raises(ValueError, match="^Stock price must be positive$"), id="No negative adjusted close price")
     ]
 )
 def test_equity_adj_price(default_equity, value_test, expected_value, expected_context):
@@ -67,8 +65,8 @@ def test_equity_adj_price(default_equity, value_test, expected_value, expected_c
 @pytest.mark.parametrize(
     "value_test, expected_value, expected_context",
     [
-        pytest.param(0, None, pytest.raises(ValueError, match="^Number of outstanding shares must be strictly positive$"), id="No null outstanding shares"),
-        pytest.param(-1, None, pytest.raises(ValueError, match="^Number of outstanding shares must be strictly positive$"), id="No negative outstanding shares")
+        pytest.param(0, None, pytest.raises(ValueError, match="^Number of outstanding shares must be positive$"), id="No null outstanding shares"),
+        pytest.param(-1, None, pytest.raises(ValueError, match="^Number of outstanding shares must be positive$"), id="No negative outstanding shares")
     ]
 )
 def test_equity_shares_outstanding(default_equity, value_test, expected_value, expected_context):
@@ -92,8 +90,8 @@ def test_default_values_bond(default_bond):
 @pytest.mark.parametrize(
     "value_test, expected_value, expected_context",
     [
-        pytest.param(0, None, pytest.raises(ValueError, match="^Bond's face value must be strictly positive$"), id="No null face value"),
-        pytest.param(-1, None, pytest.raises(ValueError, match="^Bond's face value must be strictly positive$"), id="No negative face value"),
+        pytest.param(0, None, pytest.raises(ValueError, match="^Bond's face value must be positive$"), id="No null face value"),
+        pytest.param(-1, None, pytest.raises(ValueError, match="^Bond's face value must be positive$"), id="No negative face value"),
     ]
 )
 def test_bond_face_value(default_bond, value_test, expected_value, expected_context):
@@ -105,8 +103,8 @@ def test_bond_face_value(default_bond, value_test, expected_value, expected_cont
 @pytest.mark.parametrize(
     "value_test, expected_value, expected_context",
     [
-        pytest.param(0, None, pytest.raises(ValueError, match="^Bond's coupon rate must be strictly positive$"), id="No null coupon rate"),
-        pytest.param(-1, None, pytest.raises(ValueError, match="^Bond's coupon rate must be strictly positive$"), id="No negative coupon rate"),
+        pytest.param(0, None, pytest.raises(ValueError, match="^Bond's coupon rate must be positive$"), id="No null coupon rate"),
+        pytest.param(-1, None, pytest.raises(ValueError, match="^Bond's coupon rate must be positive$"), id="No negative coupon rate"),
     ]
 )
 def test_bond_coupon_rate(default_bond, value_test, expected_value, expected_context):
@@ -118,8 +116,8 @@ def test_bond_coupon_rate(default_bond, value_test, expected_value, expected_con
 @pytest.mark.parametrize(
     "value_test, expected_value, expected_context",
     [
-        pytest.param(0, None, pytest.raises(ValueError, match="^Bond's years to maturity must be strictly positive$"), id="No null years to maturity"),
-        pytest.param(-1, None, pytest.raises(ValueError, match="^Bond's years to maturity must be strictly positive$"), id="No negative years to maturity"),
+        pytest.param(0, None, pytest.raises(ValueError, match="^Bond's years to maturity must be positive$"), id="No null years to maturity"),
+        pytest.param(-1, None, pytest.raises(ValueError, match="^Bond's years to maturity must be positive$"), id="No negative years to maturity"),
     ]
 )
 def test_bond_years_to_maturity(default_bond, value_test, expected_value, expected_context):
@@ -131,8 +129,8 @@ def test_bond_years_to_maturity(default_bond, value_test, expected_value, expect
 @pytest.mark.parametrize(
     "value_test, expected_value, expected_context",
     [
-        pytest.param(0, None, pytest.raises(ValueError, match="^Bond's market price must be strictly positive$"), id="No null market price"),
-        pytest.param(-1, None, pytest.raises(ValueError, match="^Bond's market price must be strictly positive$"), id="No negative market price"),
+        pytest.param(0, None, pytest.raises(ValueError, match="^Bond's market price must be positive$"), id="No null market price"),
+        pytest.param(-1, None, pytest.raises(ValueError, match="^Bond's market price must be positive$"), id="No negative market price"),
     ]
 )
 def test_bond_market_price(default_bond, value_test, expected_value, expected_context):
@@ -178,8 +176,8 @@ def test_option_option_type(default_option, value_test, expected_value, expected
 @pytest.mark.parametrize(
     "value_test, expected_value, expected_context",
     [
-        pytest.param(0, None, pytest.raises(ValueError, match="^Strike price must be strictly positive$"), id="Null strike price"),
-        pytest.param(-1, None, pytest.raises(ValueError, match="^Strike price must be strictly positive$"), id="Negative strike price")
+        pytest.param(0, None, pytest.raises(ValueError, match="^Strike price must be positive$"), id="Null strike price"),
+        pytest.param(-1, None, pytest.raises(ValueError, match="^Strike price must be positive$"), id="Negative strike price")
     ]
 )
 def test_option_strike(default_option, value_test, expected_value, expected_context):

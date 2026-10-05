@@ -5,9 +5,9 @@ Several tests are also designed along the way to ensure project's robustness and
 
 # How to run it ?
 For now, the project is purely constituted of objects (foundations) and does not contain scripts to be run.
-Nevertheless, you can still test them out by cloning the repository on your machine and run the configuration file `pyproject.toml`. 
+Nevertheless, you can still test them out by cloning the repository on your machine and install the configuration file `pyproject.toml`. 
 
-After that, you will be able to instantiate financial instrument's objects by importing in your script the library `market_data_lib` under the subfolder `src`.
+After that, you will be able to instantiate financial instrument's objects by importing them in your script the library `market_data_lib` under the subfolder `src`.
 
 # About collaboration
 Do not hesitate to contribute by opening a PR or reaching out in case of any questions.
