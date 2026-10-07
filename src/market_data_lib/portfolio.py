@@ -1,8 +1,8 @@
 from market_data_lib.instruments import Instrument
 
 class Portfolio:
-    def __init__(self, positions: dict[Instrument, float]) -> None:
-        self._positions = positions
+    def __init__(self, *positions: tuple[Instrument, float]) -> None:
+        self._positions = dict(positions)
 
     @property
     def positions(self) -> dict[Instrument, float]:

@@ -24,19 +24,24 @@ class Instrument(ABC):
 @dataclass(frozen=True)
 class Equity(Instrument):
     adj_price: float
-    shares_outstanding: int
+    shares_outstanding: int | None = None
 
     def __post_init__(self) -> None:
         super().__post_init__()
         if self.adj_price <= 0: raise ValueError("Stock price must be positive")
-        if self.shares_outstanding <= 0: raise ValueError("Number of outstanding shares must be positive")
+        if self.shares_outstanding != None:
+            if self.shares_outstanding < 0: 
+                raise ValueError("Number of outstanding shares must be positive")
 
     def price(self) -> float:
         return self.adj_price
 
     @property
     def market_cap(self) -> float:
-        return self.price() * self.shares_outstanding
+        if self.shares_outstanding == None:
+            raise ValueError("[shares_outstanding = None] Specify the number of outstanding shares to get the market cap")
+        else:
+            return self.price() * self.shares_outstanding
 
 @dataclass(frozen=True)
 class Bond(Instrument):

@@ -16,7 +16,7 @@ def test_portfolio_default(default_pf, default_equity, default_bond):
 def test_portfolio_w_option_default(default_pf, default_equity, default_bond, default_option):
     def_eq, def_bnd = default_equity(), default_bond()
     def_opt = default_option()
-    pf = default_pf({def_opt: 7})   # For testing purpose: adding 7 default options to the portfolio 
+    pf = default_pf((def_opt, 7))   # For testing purpose: adding 7 default options to the portfolio 
     assert pf.positions == {def_eq:10, def_bnd:2, def_opt:7}    # To confirm options have been well integrated
 
     with pytest.raises(match="^No price defined for this asset$"):

@@ -65,7 +65,6 @@ def test_equity_adj_price(default_equity, value_test, expected_value, expected_c
 @pytest.mark.parametrize(
     "value_test, expected_value, expected_context",
     [
-        pytest.param(0, None, pytest.raises(ValueError, match="^Number of outstanding shares must be positive$"), id="No null outstanding shares"),
         pytest.param(-1, None, pytest.raises(ValueError, match="^Number of outstanding shares must be positive$"), id="No negative outstanding shares")
     ]
 )
@@ -73,6 +72,18 @@ def test_equity_shares_outstanding(default_equity, value_test, expected_value, e
     with expected_context:
         stock = default_equity(shares_outstanding=value_test)
         assert stock.shares_outstanding == expected_value
+
+# Market Cap
+@pytest.mark.parametrize(
+    "value_test, expected_value, expected_context",
+    [
+        pytest.param(None, None, pytest.raises(ValueError, match="[shares_outstanding = None]"), id="No outstd shares --> no market cap")
+    ]
+)
+def test_equity_market_cap(default_equity, value_test, expected_value, expected_context):
+    stock = default_equity(shares_outstanding=value_test)
+    with expected_context:
+        assert stock.market_cap == expected_value
 
 
 # Bond
