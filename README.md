@@ -35,7 +35,7 @@ from market_data_lib.porfotlio import Portfolio
 google_stock = Equity(ticker="GOOG", currency="USD", adj_price=350, shares_outstanding=12 * 10**9)
 nvdia_stock = Equity("NVDA", "USD", 250)    # shares_outstanding is optional
 bond_us = Bond("BND", "USD", face_value=1000, coupon_rate=0.05, years_to_maturity=10, market_price=98.72)
-call_google = Option("OPT", "USD", underlying=google_stock, option_type="c", strike=375, expiry=date(2026,12,30))
+call_google = Option("OPT", "USD", underlying=google_stock, option_type="c", strike=375, expiry=date(2026, 12, 30))
 
 # Build portfolio object with position sizing
 my_portfolio = Portfolio((google_stock, 3), (nvidia_stock, 10), (bond_us, 3), (call_google, 4))
