@@ -46,7 +46,7 @@ my_portfolio = Portfolio((google_stock, 3), (nvidia_stock,10), (bond_us,3), (cal
 
 This repository showcases my approach to software design, domain architecture, and Python engineering standards.
 
-### Information for Occasional Viewers, Recruiters & Hiring Managers
+### Information for Recruiters & Hiring Managers
 
 If you are evaluating this repository as part of a hiring process, thank you for taking the time to review my work!
 
