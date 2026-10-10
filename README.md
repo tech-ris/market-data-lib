@@ -38,7 +38,7 @@ bond_us = Bond("BND", "USD", face_value=1000, coupon_rate=0.05, years_to_maturit
 call_google = Option("OPT", "USD", underlying=google_stock, option_type="c", strike=375, expiry=date(2026, 12, 30))
 
 # Build portfolio object with position sizing
-my_portfolio = Portfolio((google_stock, 3), (nvidia_stock, 10), (bond_us, 3), (call_google, 4))
+my_portfolio = Portfolio({google_stock: 3, nvidia_stock: 10, bond_us: 3, call_google: 4})
 ```
 
 
