@@ -60,10 +60,13 @@ def default_option(default_equity: Callable[..., Equity]) -> Callable:
 def default_pf(
     default_equity: Callable[..., Equity], default_bond: Callable[..., Bond]
 ) -> Callable:
-    DEFAULT_VALUES_PF = {default_equity(): 10, default_bond(): 2}
+    DEFAULT_VALUES_PF: dict[Instrument, float] = {
+        default_equity(): 10,
+        default_bond(): 2,
+    }
 
-    def _called_func(*overrides: tuple[Instrument, float]) -> Portfolio:
-        args_tested = DEFAULT_VALUES_PF | dict(overrides)
-        return Portfolio(*args_tested.items())
+    def _called_func(overrides: dict[Instrument, float] = {}) -> Portfolio:
+        args_tested = DEFAULT_VALUES_PF | overrides
+        return Portfolio(args_tested)
 
     return _called_func

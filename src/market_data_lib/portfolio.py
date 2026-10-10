@@ -2,8 +2,8 @@ from market_data_lib.instruments import Instrument
 
 
 class Portfolio:
-    def __init__(self, *positions: tuple[Instrument, float]) -> None:
-        self._positions = dict(positions)
+    def __init__(self, positions: dict[Instrument, float]) -> None:
+        self._positions = positions
 
     @property
     def positions(self) -> dict[Instrument, float]:
@@ -20,31 +20,27 @@ class Portfolio:
         tickers_qties = {
             instrument.ticker: qty for instrument, qty in self.positions.items()
         }
-        return f"Portfolio({tickers_qties})"
+        return f"{tickers_qties}"
 
     def add_position(self, instrument: Instrument, quantity: float) -> None:
         if quantity <= 0:
             raise ValueError("The quantity added must be positive")
-        current_qty: float = (
-            0 if instrument not in self.positions else self.positions[instrument]
-        )
+        current_qty: float = self.positions.get(instrument, 0)
         self.positions.update({instrument: current_qty + quantity})
 
     def remove_position(
         self, instrument: Instrument, quantity: float | None = None
     ) -> None:
-        if instrument not in self.positions:
-            raise ValueError(f"{instrument.ticker} is not in the portfolio.")
-        if quantity == None:  # full removal of the position if no quantity is indicated
+        if quantity == None:  # full removal of position if no quantity indicated
             del self.positions[instrument]
             return None
+        if quantity <= 0:
+            raise ValueError("The quantity removed must be positive")
 
         new_qty: float = self.positions[instrument] - quantity
-        if new_qty < 0:  # ValueError if the quantity to be removed > existing quantity
-            raise ValueError(
-                f"Cannot remove more than the current number of positions ({self.positions.get(instrument)}) for this security"
-            )
-        if new_qty == 0:  # removal if the quantity hit 0
+        if new_qty < 0:  # ValueError if quantity removed > existing quantity
+            raise ValueError(f"Cannot remove more than the instrument's quantity")
+        if new_qty == 0:  # full removal if quantity = 0
             del self.positions[instrument]
         else:
             self.positions.update({instrument: new_qty})
@@ -71,14 +67,14 @@ class Portfolio:
 
     def value_asset(self, instrument: Instrument) -> float | NotImplementedError:
         if instrument not in self.positions:
-            raise ValueError(f"{instrument.ticker} is not in the portfolio")
+            raise KeyError(f"{instrument.ticker} is not in the portfolio")
         if not isinstance(instrument.price(), (int, float)):
             raise NotImplementedError("No price defined for this asset")
         return instrument.price()
 
     def value_position(self, instrument: Instrument) -> float | str:
         if instrument not in self.positions:
-            raise ValueError(f"{instrument.ticker} is not in the portfolio")
+            raise KeyError(f"{instrument.ticker} is not in the portfolio")
         instrument_price = instrument.price()
         if isinstance(instrument_price, NotImplementedError):
             raise NotImplementedError("No price defined for this asset")
