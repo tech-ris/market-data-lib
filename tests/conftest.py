@@ -44,7 +44,7 @@ def default_bond() -> Callable[..., Bond]:
 
 
 @pytest.fixture
-def default_option(default_equity: Callable[..., Equity]) -> Callable:
+def default_option(default_equity: Callable[..., Equity]) -> Callable[..., Option]:
     DEFAULT_VALUES_OPTION_LOCAL = DEFAULT_VALUES_OPTION | dict(
         underlying=default_equity()
     )
@@ -59,7 +59,7 @@ def default_option(default_equity: Callable[..., Equity]) -> Callable:
 @pytest.fixture
 def default_pf(
     default_equity: Callable[..., Equity], default_bond: Callable[..., Bond]
-) -> Callable:
+) -> Callable[..., Portfolio]:
     DEFAULT_VALUES_PF: dict[Instrument, float] = {
         default_equity(): 10,
         default_bond(): 2,
